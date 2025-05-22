@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 // ViewModel que maneja la lógica y estado de las tareas
 class TareasViewModel : ViewModel() {
 
-    private val repositorio = TareasRepository()
+    private val repositorio = TareasRepository
 
     // Flow que contiene las tareas observables
     private val _tareas = MutableStateFlow<List<TareaDTO>>(emptyList())
