@@ -29,17 +29,24 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
     var fechaSeleccionada by remember { mutableStateOf(hoy) }
     val tareas by viewModel.tareas.collectAsState()
 
-    val tareasDelDia = tareas.filter { it.fecha == fechaSeleccionada.toString() && !it.estaCompleta }
+    //  Estas listas se actualizan cuando cambia el flujo o fecha
+    val tareasDelDia = remember(tareas, fechaSeleccionada) {
+        tareas.filter { it.fecha == fechaSeleccionada.toString() && !it.estaCompleta }
+    }
 
-    val tareasFuturas = tareas.filter {
-        LocalDate.parse(it.fecha).isAfter(fechaSeleccionada) && !it.estaCompleta
+    val tareasFuturas = remember(tareas, fechaSeleccionada) {
+        tareas.filter {
+            LocalDate.parse(it.fecha).isAfter(fechaSeleccionada) && !it.estaCompleta
+        }
     }
 
     val diasDelMes = YearMonth.now().lengthOfMonth()
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Calendario - ${fechaSeleccionada.month.getDisplayName(TextStyle.FULL, Locale.getDefault())}",
-            style = MaterialTheme.typography.titleLarge)
+        Text(
+            "Calendario - ${fechaSeleccionada.month.getDisplayName(TextStyle.FULL, Locale.getDefault())}",
+            style = MaterialTheme.typography.titleLarge
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -72,6 +79,7 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
         Text("Tareas del día $fechaSeleccionada", style = MaterialTheme.typography.titleMedium)
 
         LazyColumn {
@@ -87,8 +95,11 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
                         Text(text = tarea.descripcion, style = MaterialTheme.typography.bodySmall)
                         Text(text = "Fecha: ${tarea.fecha}", style = MaterialTheme.typography.labelSmall)
 
+                        //  Botón funcional
                         Button(
-                            onClick = { viewModel.marcarComoCompletada(tarea.id) },
+                            onClick = {
+                                viewModel.marcarComoCompletada(tarea.id)
+                            },
                             modifier = Modifier.padding(top = 8.dp)
                         ) {
                             Text("Marcar como completada")
@@ -113,7 +124,7 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ✅ Gráfico de pastel con resumen de tareas
+        //  Gráfico de resumen visual
         GraficoTareasPie(tareas = tareas)
     }
 }
@@ -122,7 +133,7 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
 fun GraficoTareasPie(tareas: List<TareaDTO>) {
     val completadas = tareas.count { it.estaCompleta }
     val pendientes = tareas.size - completadas
-    val total = tareas.size.coerceAtLeast(1) // Evita división por 0
+    val total = tareas.size.coerceAtLeast(1)
 
     val porcentajeCompletadas = completadas.toFloat() / total
     val porcentajePendientes = pendientes.toFloat() / total
@@ -154,6 +165,7 @@ fun GraficoTareasPie(tareas: List<TareaDTO>) {
         }
 
         Spacer(modifier = Modifier.height(8.dp))
+
         chartData.forEach {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
