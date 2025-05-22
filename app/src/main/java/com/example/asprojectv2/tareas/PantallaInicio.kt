@@ -1,13 +1,9 @@
 package com.example.asprojectv2.tareas
 
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,7 +12,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import com.example.asprojectv2.core.TareaDTO
 import java.time.LocalDate
 import java.time.YearMonth
@@ -29,20 +28,31 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
     var fechaSeleccionada by remember { mutableStateOf(hoy) }
     val tareas by viewModel.tareas.collectAsState()
 
-    //  Estas listas se actualizan cuando cambia el flujo o fecha
-    val tareasDelDia = remember(tareas, fechaSeleccionada) {
-        tareas.filter { it.fecha == fechaSeleccionada.toString() && !it.estaCompleta }
+    //  Escucha del ciclo de vida osea log
+    EscucharEventosDeCicloDeVida { evento ->
+        when (evento) {
+            "ON_CREATE" -> println(" onCreate ejecutado")
+            "ON_START" -> println(" onStart ejecutado")
+            "ON_RESUME" -> println(" onResume ejecutado")
+            "ON_PAUSE" -> println("⏸ onPause ejecutado")
+            "ON_STOP" -> println(" onStop ejecutado")
+            "ON_DESTROY" -> println(" onDestroy ejecutado")
+        }
     }
 
-    val tareasFuturas = remember(tareas, fechaSeleccionada) {
-        tareas.filter {
-            LocalDate.parse(it.fecha).isAfter(fechaSeleccionada) && !it.estaCompleta
-        }
+    //  Listas actualizadas en tiempo real (sin remember)
+    val tareasDelDia = tareas.filter {
+        it.fecha == fechaSeleccionada.toString() && !it.estaCompleta
+    }
+
+    val tareasFuturas = tareas.filter {
+        LocalDate.parse(it.fecha).isAfter(fechaSeleccionada) && !it.estaCompleta
     }
 
     val diasDelMes = YearMonth.now().lengthOfMonth()
 
     Column(modifier = Modifier.padding(16.dp)) {
+        //  Encabezado del calendario
         Text(
             "Calendario - ${fechaSeleccionada.month.getDisplayName(TextStyle.FULL, Locale.getDefault())}",
             style = MaterialTheme.typography.titleLarge
@@ -50,7 +60,7 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Calendario horizontal
+        //  Calendario horizontal simple
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -80,6 +90,7 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        //  Lista de tareas del día seleccionado
         Text("Tareas del día $fechaSeleccionada", style = MaterialTheme.typography.titleMedium)
 
         LazyColumn {
@@ -95,7 +106,7 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
                         Text(text = tarea.descripcion, style = MaterialTheme.typography.bodySmall)
                         Text(text = "Fecha: ${tarea.fecha}", style = MaterialTheme.typography.labelSmall)
 
-                        //  Botón funcional
+                        //  Botón que actualiza el estado y fuerza redibujo
                         Button(
                             onClick = {
                                 viewModel.marcarComoCompletada(tarea.id)
@@ -111,6 +122,7 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        //  Tareas próximas a vencer
         Text("Tareas futuras", style = MaterialTheme.typography.titleMedium)
 
         LazyColumn {
@@ -124,7 +136,7 @@ fun PantallaInicio(viewModel: TareasViewModel = viewModel()) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        //  Gráfico de resumen visual
+        //  Gráfico circular actualizado en tiempo real
         GraficoTareasPie(tareas = tareas)
     }
 }
@@ -180,4 +192,25 @@ fun GraficoTareasPie(tareas: List<TareaDTO>) {
     }
 }
 
+// 📦 Datos de cada segmento del pastel
 data class PieData(val label: String, val porcentaje: Float, val color: Color)
+
+/**
+ * Observa y responde a los eventos del ciclo de vida de la pantalla.
+ */
+@Composable
+fun EscucharEventosDeCicloDeVida(onEvento: (String) -> Unit) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, evento ->
+            onEvento(evento.name)
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+}
