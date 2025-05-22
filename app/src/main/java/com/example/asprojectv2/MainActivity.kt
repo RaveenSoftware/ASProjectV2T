@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.asprojectv2.notifications.PedirPermisoNotificacion
 import com.example.asprojectv2.tareas.AppNavegacion
-import com.example.asprojectv2.ui.theme.ASProjectV2Theme // ✅ Importa tu tema personalizado
+import com.example.asprojectv2.ui.theme.ASProjectV2Theme // no se me vaya a olvidar importar el tema :(
 
 /**
  * Actividad principal de la aplicación.
