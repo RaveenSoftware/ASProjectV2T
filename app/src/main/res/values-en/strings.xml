@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">My Planner</string>
+    <string name="agregar_tarea">Add Task</string>
+    <string name="titulo">Title</string>
+    <string name="descripcion">Description</string>
+    <string name="fecha">Date (yyyy-MM-dd)</string>
+    <string name="guardar">Save</string>
+    <string name="mi_perfil">My Profile</string>
+    <string name="subir_foto">Upload Photo</string>
+    <string name="nombre">Full Name</string>
+    <string name="cumpleaños">Birthday (yyyy-MM-dd)</string>
+    <string name="genero">Gender</string>
+    <string name="nacionalidad">Nationality</string>
+    <string name="guardar_informacion">Save Info</string>
+    <string name="tarea_guardada">Task saved</string>
+    <string name="perfil_guardado">Profile saved and birthday task added</string>
+    <string name="datos_invalidos">Check that all fields are valid</string>
+</resources>

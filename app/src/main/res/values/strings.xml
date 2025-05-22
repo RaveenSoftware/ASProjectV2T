@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Mi Agenda</string>
+    <string name="agregar_tarea">Agregar tarea</string>
+    <string name="titulo">Título</string>
+    <string name="descripcion">Descripción</string>
+    <string name="fecha">Fecha (yyyy-MM-dd)</string>
+    <string name="guardar">Guardar</string>
+    <string name="mi_perfil">Mi Perfil</string>
+    <string name="subir_foto">Subir foto</string>
+    <string name="nombre">Nombre completo</string>
+    <string name="cumpleaños">Cumpleaños (yyyy-MM-dd)</string>
+    <string name="genero">Género</string>
+    <string name="nacionalidad">Nacionalidad</string>
+    <string name="guardar_informacion">Guardar información</string>
+    <string name="tarea_guardada">Tarea guardada</string>
+    <string name="perfil_guardado">Perfil guardado y tarea añadida</string>
+    <string name="datos_invalidos">Revisa que los campos sean válidos</string>
+</resources>
